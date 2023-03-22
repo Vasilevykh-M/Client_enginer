@@ -26,7 +26,7 @@ class ModelEngineerCatBoost(ModelEngineer):
             loss_train = metrics.mean_squared_log_error(Y_train, Y_pred_train)
             loss_test = metrics.mean_squared_log_error(Y_train, Y_pred_train)
             cm = metrics.confusion_matrix(Y_test, Y_pred_test)
-            self.model.save_model("cat_boost/weights_model/cat_boost"+str(i*self.split_epoch))
+            self.model.save_model("weights_model/cat_boost/cat_boost"+str(i*self.split_epoch))
             self.list_models[str(i*self.split_epoch)] = (
                 "cat_boost"+str(i*self.split_epoch) + ".cbm",
                 Log_train(acc_train, acc_test, f1_train, f1_test, loss_train, loss_test, cm)

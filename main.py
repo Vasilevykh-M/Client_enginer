@@ -18,7 +18,7 @@ if __name__ == '__main__':
     #model.fit(X_train, y_train, X_test, y_test, 20)
 
     model = ModelEngineerTorchNN("TorchNN", nn.Sequential(nn.Linear(4, 50), nn.ReLU(), nn.Linear(50, 3)))
-    model.fit(X_train, y_train, X_test, y_test, 20, 5)
+    model.fit(X_train, y_train, X_test, y_test, 1000, 50)
 
     list_name = []
     list_acc_train = []

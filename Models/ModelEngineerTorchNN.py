@@ -35,17 +35,22 @@ class ModelEngineerTorchNN(ModelEngineer):
         i = 0
         while epoch > 0:
             i += 1
+            print(i)
 
-            for i in range(split_epoch):
+            self.model.train()
+            for j in range(split_epoch):
                 Y_pred_train = self.model(X_train)
                 l = loss(Y_pred_train, Y_train)
                 l.backward()
                 optimizer.step()
                 optimizer.zero_grad()
 
+            self.model.eval()
             with torch.no_grad():
                 Y_pred_train = self.model(X_train)
                 Y_pred_test = self.model(X_test)
+                loss_train = loss(Y_pred_train, Y_train).item()
+                loss_test = loss(Y_pred_train, Y_train).item()
 
             Y_pred_train = torch.max(Y_pred_train,1).indices
             Y_pred_test = torch.max(Y_pred_test, 1).indices
@@ -54,10 +59,8 @@ class ModelEngineerTorchNN(ModelEngineer):
             acc_test = metrics.accuracy_score(Y_test, Y_pred_test)
             f1_train = metrics.f1_score(Y_train, Y_pred_train, average='micro')
             f1_test = metrics.f1_score(Y_test, Y_pred_test, average='micro')
-            loss_train = metrics.mean_squared_log_error(Y_train, Y_pred_train)
-            loss_test = metrics.mean_squared_log_error(Y_train, Y_pred_train)
             cm = metrics.confusion_matrix(Y_test, Y_pred_test)
-            torch.save(self.model, "weights_model/torch"+str(i*split_epoch))
+            torch.save(self.model, "weights_model/torch/torch"+str(i*split_epoch))
             self.list_models[str(i * split_epoch)] = (
                 "cat_boost" + str(i * split_epoch) + ".cbm",
                 Log_train(acc_train, acc_test, f1_train, f1_test, loss_train, loss_test, cm)
