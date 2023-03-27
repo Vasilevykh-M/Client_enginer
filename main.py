@@ -17,7 +17,7 @@ if __name__ == '__main__':
     #model = ModelEngineerCatBoost("CatBoost", 1, 2)
     #model.fit(X_train, y_train, X_test, y_test, 20)
 
-    model = ModelEngineerTorchNN("TorchNN", nn.Sequential(nn.Linear(4, 50), nn.ReLU(), nn.Linear(50, 3)), 50)
+    model = ModelEngineerTorchNN("TorchNN", nn.Sequential(nn.Linear(4, 1000), nn.ReLU(), nn.Linear(1000, 3)), 50)
     model.fit(X_train, y_train, X_test, y_test, 1000)
 
     list_name = []
@@ -31,14 +31,14 @@ if __name__ == '__main__':
     list_label = []
 
     for i in model.list_models:
-        list_name.append(i)
-        list_acc_train.append(model.list_models[i][1].acc_train)
-        list_acc_test.append(model.list_models[i][1].acc_test)
-        list_f1_train.append(model.list_models[i][1].f1_train)
-        list_f1_test.append(model.list_models[i][1].f1_test)
-        list_loss_train.append(model.list_models[i][1].loss_train)
-        list_loss_test.append(model.list_models[i][1].loss_test)
-        list_cm.append(model.list_models[i][1].cm)
+        list_name.append(model.list_models[i].iter * 50)
+        list_acc_train.append(model.list_models[i].metric.acc_train)
+        list_acc_test.append(model.list_models[i].metric.acc_test)
+        list_f1_train.append(model.list_models[i].metric.f1_train)
+        list_f1_test.append(model.list_models[i].metric.f1_test)
+        list_loss_train.append(model.list_models[i].metric.loss_train)
+        list_loss_test.append(model.list_models[i].metric.loss_test)
+        list_cm.append(model.list_models[i].metric.cm)
 
     for i in range(len(list_acc_train)):
         list_label.append("train")

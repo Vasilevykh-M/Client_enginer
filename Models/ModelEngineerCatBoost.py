@@ -1,4 +1,5 @@
 from Models.Model import ModelEngineer
+from Models.Model import Metadata
 from catboost import CatBoostClassifier
 
 class ModelEngineerCatBoost(ModelEngineer):
@@ -17,7 +18,10 @@ class ModelEngineerCatBoost(ModelEngineer):
             Y_pred_train = self.predict(X_train)
             Y_pred_test = self.predict(X_text)
             self.model.save_model("weights_model/cat_boost/cat_boost"+str(i*self.split_epoch))
-            self.calc_log(Y_pred_train, Y_pred_test, Y_train, Y_test, i)
+            metric = self.calc_metrics(Y_pred_train, Y_pred_test, Y_train, Y_test)
+            metadata = Metadata(i, "CatBoost", metric, self.model)
+            self.list_models["CatBoost" + str(i)] = metadata
+            self.model.save_model("/weights_model/cat_boost/CatBoost" + str(i), format="cbm")
             epoch -= self.split_epoch
 
     def predict(self, X):

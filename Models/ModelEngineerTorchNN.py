@@ -1,4 +1,5 @@
 from Models.Model import ModelEngineer
+from Models.Model import Metadata
 import torch
 import torch.nn as nn
 
@@ -7,7 +8,6 @@ class Model_NN(torch.nn.Module):
     def __init__(self, layer):
         super(Model_NN, self).__init__()
         self.layer = layer
-
 
     def forward(self, X):
         return self.layer(X)
@@ -48,13 +48,15 @@ class ModelEngineerTorchNN(ModelEngineer):
                 Y_pred_train = self.model(X_train)
                 Y_pred_test = self.model(X_test)
                 loss_train = loss(Y_pred_train, Y_train).item()
-                loss_test = loss(Y_pred_train, Y_train).item()
+                loss_test = loss(Y_pred_test, Y_test).item()
 
             Y_pred_train = torch.max(Y_pred_train,1).indices
             Y_pred_test = torch.max(Y_pred_test, 1).indices
 
-            self.calc_log(Y_pred_train, Y_pred_test, Y_train, Y_test, i, loss_train, loss_test)
-            torch.save(self.model, "weights_model/torch/torch"+str(i*self.split_epoch))
+            metric = self.calc_metrics(Y_pred_train, Y_pred_test, Y_train, Y_test, loss_train, loss_test)
+            metadata = Metadata(i, "Torch", metric, self.model.state_dict())
+            self.list_models["Torch"+str(i)] = metadata
+            torch.save(self.model.state_dict(), "weights_model/torch/Torch"+str(i)+".pth")
             epoch -= self.split_epoch
 
 
