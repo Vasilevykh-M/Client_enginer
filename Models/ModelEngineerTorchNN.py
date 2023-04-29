@@ -56,6 +56,7 @@ class ModelEngineerTorchNN(ModelEngineer):
             metric = self.calc_metrics(Y_pred_train, Y_pred_test, Y_train, Y_test, loss_train, loss_test)
             metadata = Metadata(i, "Torch", metric, self.model.state_dict())
             self.list_models["Torch"+str(i)] = metadata
+            print(type(self.model.state_dict()))
             torch.save(self.model.state_dict(), "weights_model/torch/Torch"+str(i)+".pth")
             epoch -= self.split_epoch
 

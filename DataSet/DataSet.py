@@ -20,8 +20,10 @@ class FeatureCat(Feature):
 
 
 class FeatureNum(Feature):
-    def __init__(self, name, count, std, mean):
+    def __init__(self, name, count, std, mean, mini, maxi):
         super(FeatureNum, self).__init__(name, count)
+        self.min = mini
+        self.max = maxi
         self.std = std
         self.mean = mean
 
@@ -43,12 +45,12 @@ class DataSet:
 
     def calc_stat(self, list_feature):
         for i in list_feature:
-            self.feature[i].std = self.data[i].std()
-            self.feature[i].std = self.data[i].mean()
+            print(i, self.data[i].std())
+            self.feature[i] = FeatureNum(i, len(self.data[i]), self.data[i].std(), self.data[i].mean(),self.data[i].min(), self.data[i].max())
 
     def normalization(self, list_feature):
         for i in list_feature:
-            self.data[i] = (self.data[i] - self.feature[i].mean) / self.feature[i].std
+            self.data[i] = (self.data[i] - self.feature[i].mean) / (self.feature[i].std + 0.0001)
 
     def cat_features(self, list_feature):
         for i in list_feature:
@@ -59,3 +61,37 @@ class DataSet:
     def hash_codes(self, list_feature):
         for i in list_feature:
             self.data[i] = self.data[i].map(lambda x: hash(x)%100)
+
+    def add_feature(self):
+        self.data["ЦенаЗаКвМетр"] = self.data["ФактическаяСтоимостьПомещения"] / self.data["ПродаваемаяПлощадь"]
+        self.data["Скидка%"] = self.data["СкидкаНаКвартиру"] / self.data["ФактическаяСтоимостьПомещения"]
+
+    def pre_data(self):
+        self.cat_features([
+            'ИсточникБрони', 'ВременнаяБронь',
+            'ТипСтоимости', 'ВариантОплаты',
+            'ВариантОплатыДоп', 'СделкаАН',
+            'ИнвестиционныйПродукт', 'Привилегия',
+        ])
+
+        self.data = self.data.replace({'СледующийСтатус': {'Свободна': 0, 'Продана': 1, 'В резерве': -1}})
+
+        self.hash_codes(["Город", "Статус лида (из CRM)", "ВидПомещения", "Тип"])
+
+        self.add_feature()
+
+        self.calc_stat([
+            'ДатаБрони', 'ПродаваемаяПлощадь', 'Этаж',
+            'СтоимостьНаДатуБрони', 'ФактическаяСтоимостьПомещения', 'ЦенаЗаКвМетр',
+            'ВремяБрони', 'СкидкаНаКвартиру',
+            'Город', 'Статус лида (из CRM)', 'ВидПомещения',
+            'Тип', 'Скидка%'
+        ])
+
+        self.normalization([
+            'ДатаБрони', 'ПродаваемаяПлощадь', 'Этаж',
+            'СтоимостьНаДатуБрони', 'ФактическаяСтоимостьПомещения', 'ЦенаЗаКвМетр',
+            'ВремяБрони', 'СкидкаНаКвартиру',
+            'Город', 'Статус лида (из CRM)', 'ВидПомещения',
+            'Тип', 'Скидка%',
+        ])
