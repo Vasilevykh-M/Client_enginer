@@ -35,7 +35,7 @@ class SendFile(ft.UserControl):
             self.file_name.value = "Файл: " + e.files[0].name
 
             data = pd.read_excel(e.files[0].path)
-            if validation_data.validation_(data):
+            if validation_data.validation_(data, False):
                 data = validation_data.cleanMissingValues(data)
                 try:
                     with grpc.insecure_channel('localhost:15000') as channel:

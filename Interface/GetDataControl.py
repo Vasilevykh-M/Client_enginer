@@ -111,7 +111,7 @@ class GetData(ft.UserControl):
     def get_file_picker(self, e: ft.FilePickerResultEvent):
         if e.files != None:
             data = pd.read_excel(e.files[0].path)
-            if validation_data.validation_(data):
+            if validation_data.validation_(data, True):
                 self.data_set = genereation_data_from_file(data)
                 self.count_values.value = self.data_set.data.shape[0]
                 self.date_values.value = datetime.date.today()
